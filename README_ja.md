@@ -36,40 +36,49 @@ cd sui-lang
 ### インタプリタ
 
 ```bash
-# サンプル実行
-python sui.py
+# サンプル実行（デモを表示）
+sui
 
 # ファイル実行
-python sui.py examples/fibonacci.sui
+sui examples/fibonacci.sui
 
 # 引数付き実行
-python sui.py examples/fib_args.sui 15
+sui examples/fib_args.sui 15
 
 # バリデーション
-python sui.py --validate examples/fibonacci.sui
+sui --validate examples/fibonacci.sui
 ```
 
 ### トランスパイラ（Sui → Python）
 
 ```bash
 # 変換結果を表示
-python sui2py.py examples/fibonacci.sui
+sui2py examples/fibonacci.sui
 
 # ファイルに出力
-python sui2py.py examples/fibonacci.sui -o fib.py
+sui2py examples/fibonacci.sui -o fib.py
 
 # 変換して即実行
-python sui2py.py examples/fib_args.sui --run 15
+sui2py examples/fib_args.sui --run 15
 ```
 
 ### トランスパイラ（Python → Sui）人間向け
 
 ```bash
 # 変換結果を表示
-python py2sui.py your_code.py
+py2sui your_code.py
 
 # ファイルに出力
-python py2sui.py your_code.py -o output.sui
+py2sui your_code.py -o output.sui
+```
+
+### インストールせずに実行（ソースから）
+
+```bash
+# pythonコマンドで直接実行
+python sui.py examples/fibonacci.sui
+python sui2py.py examples/fibonacci.sui
+python py2sui.py your_code.py
 ```
 
 ## 構文
@@ -245,7 +254,7 @@ SuiはLLMによるコード生成のために設計されている。`prompts/` 
 1. `prompts/system_prompt.md` からシステムプロンプトをコピー
 2. ChatGPT / Claude / Gemini 等に貼り付け
 3. タスクを指定してSuiコードを生成させる
-4. `python sui.py` で実行
+4. `sui your_code.sui` で実行
 
 プロンプトテンプレートと期待される出力は [prompts/examples.md](prompts/examples.md) を参照。
 

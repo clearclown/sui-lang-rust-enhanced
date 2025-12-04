@@ -36,40 +36,49 @@ cd sui-lang
 ### Interpreter
 
 ```bash
-# Run sample
-python sui.py
+# Run sample (shows demo)
+sui
 
 # Run file
-python sui.py examples/fibonacci.sui
+sui examples/fibonacci.sui
 
 # Run with arguments
-python sui.py examples/fib_args.sui 15
+sui examples/fib_args.sui 15
 
 # Validate
-python sui.py --validate examples/fibonacci.sui
+sui --validate examples/fibonacci.sui
 ```
 
 ### Transpiler (Sui → Python)
 
 ```bash
 # Show converted code
-python sui2py.py examples/fibonacci.sui
+sui2py examples/fibonacci.sui
 
 # Output to file
-python sui2py.py examples/fibonacci.sui -o fib.py
+sui2py examples/fibonacci.sui -o fib.py
 
 # Convert and execute
-python sui2py.py examples/fib_args.sui --run 15
+sui2py examples/fib_args.sui --run 15
 ```
 
 ### Transpiler (Python → Sui) for humans
 
 ```bash
 # Show converted code
-python py2sui.py your_code.py
+py2sui your_code.py
 
 # Output to file
-python py2sui.py your_code.py -o output.sui
+py2sui your_code.py -o output.sui
+```
+
+### Running without Installation (from source)
+
+```bash
+# Using python directly
+python sui.py examples/fibonacci.sui
+python sui2py.py examples/fibonacci.sui
+python py2sui.py your_code.py
 ```
 
 ## Syntax
@@ -220,7 +229,7 @@ Sui is designed for LLM code generation. Use the prompts in `prompts/` directory
 1. Copy the system prompt from `prompts/system_prompt.md`
 2. Paste it into ChatGPT / Claude / Gemini / etc.
 3. Ask to generate Sui code for your task
-4. Run with `python sui.py`
+4. Run with `sui your_code.sui`
 
 See [prompts/examples.md](prompts/examples.md) for prompt templates and expected outputs.
 
