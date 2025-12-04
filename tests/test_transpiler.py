@@ -17,18 +17,18 @@ class TestSui2Py:
     def test_assignment(self):
         transpiler = Sui2PyTranspiler()
         code = transpiler.transpile("= g0 42\n. g0")
-        assert "g[0] = 42" in code
-        assert "print(g[0])" in code
+        assert "g0 = 42" in code
+        assert "print(g0)" in code
 
     def test_arithmetic(self):
         transpiler = Sui2PyTranspiler()
         code = transpiler.transpile("+ v0 10 20")
-        assert "v[0] = 10 + 20" in code
+        assert "v0 = 10 + 20" in code
 
     def test_function(self):
         transpiler = Sui2PyTranspiler()
         code = transpiler.transpile("# 0 1 {\n^ a0\n}")
-        assert "def f_0" in code
+        assert "def f0" in code
         assert "return" in code
 
     def test_execution_fibonacci(self):
