@@ -445,8 +445,10 @@ Benefits of [Rust + WebAssembly](https://rustwasm.github.io/book/):
 - [x] Comprehensive test suite (115+ tests)
 
 ### In Progress
-- [ ] Online playground (WASM-based)
-- [ ] VS Code extension
+- [ ] Online playground (WASM-based) - [Deploy to GitHub Pages]
+
+### Recently Added
+- [x] VS Code extension with syntax highlighting and snippets
 
 ### Planned
 - [ ] [LSP (Language Server Protocol)](https://microsoft.github.io/language-server-protocol/) - Using [tower-lsp](https://github.com/ebkalderon/tower-lsp)
