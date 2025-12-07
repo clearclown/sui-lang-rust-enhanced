@@ -15,6 +15,7 @@ rust-version = "1.70"
 [lib]
 name = "sui_lang"
 path = "src/lib.rs"
+crate-type = ["cdylib", "rlib"]
 
 [[bin]]
 name = "sui"
@@ -63,7 +64,7 @@ tempfile = "3.10"
 default = ["repl", "colored-output"]
 repl = ["dep:rustyline"]
 colored-output = []
-wasm = ["dep:wasm-bindgen"]
+wasm = ["dep:wasm-bindgen", "dep:serde", "dep:serde_json"]
 serde = ["dep:serde", "dep:serde_json"]
 full = ["repl", "colored-output", "serde"]
 
@@ -82,4 +83,4 @@ opt-level = 0
 debug = true
 
 [package.metadata.wasm-pack.profile.release]
-wasm-opt = ["-O4"]
+wasm-opt = false

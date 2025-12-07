@@ -7,7 +7,7 @@
 
 > A line-based programming language optimized for accurate LLM code generation
 
-[日本語版 README](README_ja.md) | [Online Playground (WASM)](https://example.com/sui-playground)
+[日本語版 README](README_ja.md) | [Online Playground](https://clearclown.github.io/sui-lang-rust-enhanced/)
 
 ## Overview
 
