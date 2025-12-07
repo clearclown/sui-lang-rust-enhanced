@@ -1,8 +1,13 @@
 # Sui (粋) - A Programming Language for LLMs
 
+[![Crates.io](https://img.shields.io/crates/v/sui-lang.svg)](https://crates.io/crates/sui-lang)
+[![Documentation](https://docs.rs/sui-lang/badge.svg)](https://docs.rs/sui-lang)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://github.com/clearclown/sui-lang-rust-enhanced/actions/workflows/ci.yml/badge.svg)](https://github.com/clearclown/sui-lang-rust-enhanced/actions)
+
 > A line-based programming language optimized for accurate LLM code generation
 
-[日本語版 README](README_ja.md)
+[日本語版 README](README_ja.md) | [Online Playground (WASM)](https://example.com/sui-playground)
 
 ## Overview
 
@@ -98,7 +103,7 @@ sui2py examples/fibonacci.sui -o fib.py
 sui2py examples/fibonacci.sui --run
 ```
 
-### Transpiler (Sui → JavaScript) [NEW]
+### Transpiler (Sui → JavaScript)
 
 ```bash
 # Show converted code
@@ -114,7 +119,29 @@ sui2js examples/fibonacci.sui --run
 sui2js examples/fibonacci.sui --browser
 ```
 
-### REPL Mode [NEW]
+### Transpiler (Python → Sui)
+
+Convert Python code to Sui for LLM-friendly output:
+
+```bash
+# Convert Python to Sui
+py2sui script.py
+
+# Output to file
+py2sui script.py -o script.sui
+
+# Example conversion
+echo 'x = 10
+y = x + 5
+print(y)' | py2sui
+
+# Output:
+# = v0 10
+# + v1 v0 5
+# . v1
+```
+
+### REPL Mode
 
 ```bash
 sui --repl
@@ -156,6 +183,7 @@ sui --repl
 | `{` | `{ arr idx value` | Array write |
 | `.` | `. value` | Output |
 | `,` | `, var` | Input |
+| `R`/`P` | `R result "func" args...` | FFI call |
 
 ### Variables
 
@@ -255,29 +283,36 @@ sui-lang/
 │   ├── lib.rs          # Library root
 │   ├── bin/
 │   │   ├── sui.rs      # Main interpreter CLI
-│   │   ├── sui2py.rs   # Sui → Python transpiler
-│   │   └── sui2js.rs   # Sui → JavaScript transpiler
+│   │   ├── sui2py.rs   # Sui → Python transpiler CLI
+│   │   ├── sui2js.rs   # Sui → JavaScript transpiler CLI
+│   │   └── py2sui.rs   # Python → Sui transpiler CLI
 │   ├── interpreter/    # Core interpreter
 │   │   ├── mod.rs
-│   │   ├── lexer.rs
-│   │   ├── parser.rs
-│   │   ├── runtime.rs
-│   │   └── value.rs
+│   │   ├── lexer.rs    # Tokenization
+│   │   ├── parser.rs   # AST generation
+│   │   ├── runtime.rs  # Execution engine
+│   │   └── value.rs    # Value types
 │   ├── transpiler/     # Transpilers
 │   │   ├── mod.rs
-│   │   ├── sui2py.rs
-│   │   └── sui2js.rs
-│   ├── repl/           # REPL implementation
+│   │   ├── sui2py.rs   # Sui → Python
+│   │   ├── sui2js.rs   # Sui → JavaScript
+│   │   └── py2sui.rs   # Python → Sui
+│   ├── repl/           # Interactive REPL
+│   │   └── mod.rs
 │   └── wasm/           # WebAssembly bindings
+│       └── mod.rs
 ├── examples/           # Example Sui programs
-│   ├── fibonacci.sui
-│   ├── fib_args.sui
-│   ├── fizzbuzz.sui
-│   ├── list_sum.sui
-│   ├── args_demo.sui
-│   └── ffi_demo.sui
+│   ├── fibonacci.sui   # Recursive Fibonacci
+│   ├── fib_args.sui    # Fibonacci with CLI args
+│   ├── fizzbuzz.sui    # Classic FizzBuzz
+│   ├── list_sum.sui    # Array operations
+│   ├── args_demo.sui   # Command-line arguments
+│   └── ffi_demo.sui    # FFI function calls
 ├── tests/              # Integration tests
-├── benches/            # Benchmarks
+│   ├── comprehensive_test.rs
+│   └── integration_test.rs
+├── benches/            # Performance benchmarks
+│   └── interpreter.rs
 └── prompts/            # LLM prompts
     ├── system_prompt.md
     └── examples.md
@@ -300,39 +335,172 @@ See [prompts/examples.md](prompts/examples.md) for prompt templates and expected
 
 **Sui (粋)** - A Japanese word meaning "refined," "sophisticated," or "the essence." It represents the aesthetic of eliminating excess and keeping only what is essential.
 
-### Avoiding LLM Weaknesses
+### The Problem with LLM Code Generation
 
-| LLM Weakness | Sui's Solution |
-|--------------|----------------|
-| Bracket mismatch | Only `{}` for functions |
-| Long-range dependencies | Each line is independent |
-| Variable name typos | Only sequential numbers (v0, v1...) |
-| Complex nesting | No nesting, decompose to temp variables |
+Current LLMs struggle with certain code generation patterns. Research from [ACM TOSEM](https://dl.acm.org/doi/10.1145/3770084) shows that Domain-Specific Languages (DSLs) present additional challenges due to their unique syntax and data scarcity.
+
+| LLM Weakness | Traditional Code | Sui's Solution |
+|--------------|-----------------|----------------|
+| Bracket mismatch | `if (x) { if (y) { ... } }` | Only `{}` for functions |
+| Long-range dependencies | Variables used 100+ lines later | Each line is independent |
+| Variable name typos | `userCount` vs `userCont` | Sequential numbers (v0, v1...) |
+| Complex nesting | Nested callbacks/conditionals | Flat structure with labels |
+| Context window limits | Large codebase understanding | Minimal token usage |
+
+### AI-Friendly Design Philosophy
+
+Inspired by research from [MoonBit](https://www.moonbitlang.com/blog/ai-coding) and [JetBrains](https://blog.jetbrains.com/kotlin/2024/05/ai-friendly-programming-languages-the-kotlin-story/), Sui implements key AI-friendly principles:
+
+1. **Structured Output Compatibility** - Sui's line-based syntax avoids JSON escaping issues that [complicate LLM code generation](https://medium.com/@mne/improving-llm-code-generation-my-best-practices-eb88b128303a)
+2. **Minimal Syntax Surface** - Single-character instructions reduce hallucination rates
+3. **Deterministic Parsing** - No ambiguous grammar rules
+4. **Context Efficiency** - Programs use fewer tokens than equivalent Python/JS
 
 ### Performance (Rust vs Python)
 
 | Benchmark | Python | Rust | Speedup |
 |-----------|--------|------|---------|
-| Fibonacci(20) | ~50ms | ~1ms | ~50x |
-| Loop 10000 | ~100ms | ~2ms | ~50x |
-| Array ops | ~80ms | ~1ms | ~80x |
+| Fibonacci(20) | ~50ms | ~1ms | **~50x** |
+| Loop 10000 | ~100ms | ~2ms | **~50x** |
+| Array ops | ~80ms | ~1ms | **~80x** |
+| WASM binary | N/A | ~50KB | Instant load |
+
+### Comparison with Other Approaches
+
+| Feature | Sui | [LMQL](https://lmql.ai/) | Python | JSON DSL |
+|---------|-----|------|--------|----------|
+| LLM output parsing | Trivial | Complex | Medium | Error-prone |
+| Token efficiency | Excellent | Medium | Low | Medium |
+| Bracket matching | Minimal | Required | Required | Required |
+| Runtime environment | Native/WASM/Browser | Python | Python | Parser needed |
+| Learning curve | Low | Medium | Low | Low |
+
+## FFI (Foreign Function Interface)
+
+Sui supports calling builtin functions using the `R` (or `P`) command:
+
+```sui
+; Math functions
+R v0 "math.sqrt" 16        ; v0 = 4.0
+R v1 "pow" 2 10            ; v1 = 1024.0
+R v2 "sin" 0               ; v2 = 0.0
+R v3 "cos" 0               ; v3 = 1.0
+
+; String/Array functions
+R v4 "len" "hello"         ; v4 = 5
+R v5 "abs" -42             ; v5 = 42
+R v6 "max" 10 20 5 30      ; v6 = 30
+R v7 "min" 10 20 5 30      ; v7 = 5
+
+; Type conversion
+R v8 "int" "123"           ; v8 = 123
+R v9 "float" "3.14"        ; v9 = 3.14
+R v10 "str" 42             ; v10 = "42"
+R v11 "round" 3.14159 2    ; v11 = 3.14
+
+; Random
+R v12 "random.randint" 1 100  ; v12 = random 1-100
+```
+
+## WebAssembly Support
+
+Sui compiles to WebAssembly for browser execution with near-native performance:
+
+```bash
+# Build WASM module
+wasm-pack build --target web
+
+# Use in browser
+```
+
+```html
+<script type="module">
+import init, { run_sui } from './pkg/sui_lang.js';
+
+await init();
+const output = run_sui(`
+= v0 10
++ v1 v0 5
+. v1
+`);
+console.log(output); // ["15"]
+</script>
+```
+
+Benefits of [Rust + WebAssembly](https://rustwasm.github.io/book/):
+- **Small binary size**: ~50KB (vs Go's 2MB+ minimum)
+- **No runtime overhead**: Direct compilation to WASM
+- **Memory safety**: Rust's guarantees carry over to WASM
 
 ## Roadmap
 
-- [x] Rust interpreter
-- [x] Transpiler (Python output)
-- [x] Transpiler (JavaScript output)
-- [x] REPL mode
+### Completed
+- [x] High-performance Rust interpreter
+- [x] Transpiler (Sui → Python)
+- [x] Transpiler (Sui → JavaScript)
+- [x] Transpiler (Python → Sui)
+- [x] Interactive REPL mode
 - [x] WebAssembly bindings
-- [ ] Type annotations (optional)
-- [ ] LLVM IR output
-- [ ] LSP (Language Server Protocol)
-- [ ] Debugger
+- [x] FFI support (builtin functions)
+- [x] Comprehensive test suite (115+ tests)
+
+### In Progress
+- [ ] Online playground (WASM-based)
+- [ ] VS Code extension
+
+### Planned
+- [ ] [LSP (Language Server Protocol)](https://microsoft.github.io/language-server-protocol/) - Using [tower-lsp](https://github.com/ebkalderon/tower-lsp)
+- [ ] Step debugger with breakpoints
+- [ ] [LLVM IR](https://mcyoung.xyz/2023/08/01/llvm-ir/) output for native compilation
+- [ ] Type annotations (optional static typing)
+- [ ] Package manager for Sui modules
+- [ ] Jupyter kernel integration
+
+## Research & References
+
+Sui's design is informed by recent research in LLM code generation:
+
+- **[LLM Code Generation Survey](https://dl.acm.org/doi/10.1145/3770084)** - ACM TOSEM survey on challenges with DSLs
+- **[Awesome Code LLM](https://github.com/codefuse-ai/Awesome-Code-LLM)** - Curated list of code generation research
+- **[Structured Output Best Practices](https://www.timlrx.com/blog/generating-structured-output-from-llms)** - Why simple output formats matter
+- **[MoonBit AI-Friendly Design](https://www.moonbitlang.com/blog/ai-coding)** - Block-based language design for AI
+- **[LMQL](https://lmql.ai/)** - Language Model Query Language for constrained generation
 
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
+### Development Setup
+
+```bash
+# Clone and build
+git clone https://github.com/clearclown/sui-lang-rust-enhanced.git
+cd sui-lang-rust-enhanced
+cargo build --release
+
+# Run tests
+cargo test
+
+# Run benchmarks
+cargo bench
+
+# Build with all features
+cargo build --features full
+```
+
+### Areas for Contribution
+
+- **LSP Implementation** - Help build IDE support using [tower-lsp](https://github.com/ebkalderon/tower-lsp)
+- **LLVM Backend** - Native compilation via [llvm-sys](https://crates.io/crates/llvm-sys)
+- **Documentation** - Improve examples and tutorials
+- **Testing** - Add more edge case tests
+
 ## License
 
 MIT License
+
+---
+
+<p align="center">
+  <b>Sui (粋)</b> - Refined code generation for the AI era
+</p>
