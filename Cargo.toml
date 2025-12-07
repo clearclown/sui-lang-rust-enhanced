@@ -1,0 +1,85 @@
+[package]
+name = "sui-lang"
+version = "0.2.0"
+edition = "2021"
+authors = ["Sui Contributors"]
+description = "A programming language optimized for LLM code generation - Rust implementation"
+license = "MIT"
+repository = "https://github.com/TakatoHonda/sui-lang"
+homepage = "https://github.com/TakatoHonda/sui-lang"
+keywords = ["programming-language", "llm", "code-generation", "interpreter", "transpiler"]
+categories = ["compilers", "development-tools", "command-line-utilities"]
+readme = "README.md"
+rust-version = "1.70"
+
+[lib]
+name = "sui_lang"
+path = "src/lib.rs"
+
+[[bin]]
+name = "sui"
+path = "src/bin/sui.rs"
+
+[[bin]]
+name = "sui2py"
+path = "src/bin/sui2py.rs"
+
+[[bin]]
+name = "sui2js"
+path = "src/bin/sui2js.rs"
+
+[[bin]]
+name = "py2sui"
+path = "src/bin/py2sui.rs"
+
+[dependencies]
+# Regex for parsing
+regex = "1.10"
+# CLI argument parsing
+clap = { version = "4.4", features = ["derive", "color"] }
+
+# REPL support
+rustyline = { version = "14.0", optional = true }
+
+# Error handling
+thiserror = "1.0"
+anyhow = "1.0"
+
+# Colored output
+colored = "2.1"
+
+# Serialization (for debug output, etc.)
+serde = { version = "1.0", features = ["derive"], optional = true }
+serde_json = { version = "1.0", optional = true }
+
+# WASM support (optional)
+wasm-bindgen = { version = "0.2", optional = true }
+
+[dev-dependencies]
+criterion = "0.5"
+tempfile = "3.10"
+
+[features]
+default = ["repl", "colored-output"]
+repl = ["dep:rustyline"]
+colored-output = []
+wasm = ["dep:wasm-bindgen"]
+serde = ["dep:serde", "dep:serde_json"]
+full = ["repl", "colored-output", "serde"]
+
+[[bench]]
+name = "interpreter"
+harness = false
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
+
+[profile.dev]
+opt-level = 0
+debug = true
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = ["-O4"]
