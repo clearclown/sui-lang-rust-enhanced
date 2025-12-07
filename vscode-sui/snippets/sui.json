@@ -1,0 +1,155 @@
+{
+  "Function Definition": {
+    "prefix": "func",
+    "body": [
+      "# ${1:0} ${2:1} {",
+      "  ${3:; function body}",
+      "  ^ ${4:a0}",
+      "}"
+    ],
+    "description": "Define a new function"
+  },
+  "Assignment": {
+    "prefix": "assign",
+    "body": "= ${1:v0} ${2:value}",
+    "description": "Assign a value to a variable"
+  },
+  "If Condition": {
+    "prefix": "if",
+    "body": [
+      "; if ${1:condition}",
+      "${2:< v0 ${3:a} ${4:b}}",
+      "! v1 v0",
+      "? v1 ${5:label}",
+      "; then",
+      "${6:; code here}",
+      ": ${5:label}"
+    ],
+    "description": "Conditional jump pattern"
+  },
+  "Loop": {
+    "prefix": "loop",
+    "body": [
+      "; loop from 0 to ${1:n}",
+      "= ${2:v0} 0",
+      ": ${3:0}",
+      "< ${4:v1} ${2:v0} ${1:n}",
+      "! ${5:v2} ${4:v1}",
+      "? ${5:v2} ${6:1}",
+      "${7:; loop body}",
+      "+ ${2:v0} ${2:v0} 1",
+      "@ ${3:0}",
+      ": ${6:1}"
+    ],
+    "description": "Loop pattern (0 to n-1)"
+  },
+  "While Loop": {
+    "prefix": "while",
+    "body": [
+      "; while ${1:condition}",
+      ": ${2:0}",
+      "${3:; check condition}",
+      "? ${4:v0} ${5:1}",
+      "${6:; loop body}",
+      "@ ${2:0}",
+      ": ${5:1}"
+    ],
+    "description": "While loop pattern"
+  },
+  "Print": {
+    "prefix": "print",
+    "body": ". ${1:v0}",
+    "description": "Output a value"
+  },
+  "Function Call": {
+    "prefix": "call",
+    "body": "$ ${1:v0} ${2:funcId} ${3:args}",
+    "description": "Call a function"
+  },
+  "Array Create": {
+    "prefix": "array",
+    "body": [
+      "; create array of size ${1:5}",
+      "[ ${2:v0} ${1:5}"
+    ],
+    "description": "Create a new array"
+  },
+  "Array Read": {
+    "prefix": "aget",
+    "body": "] ${1:result} ${2:array} ${3:index}",
+    "description": "Read from array"
+  },
+  "Array Write": {
+    "prefix": "aset",
+    "body": "{ ${1:array} ${2:index} ${3:value}",
+    "description": "Write to array"
+  },
+  "FFI Call": {
+    "prefix": "ffi",
+    "body": "R ${1:v0} \"${2:math.sqrt}\" ${3:args}",
+    "description": "Call FFI function"
+  },
+  "Fibonacci": {
+    "prefix": "fibonacci",
+    "body": [
+      "; Fibonacci function",
+      "# 0 1 {",
+      "  < v0 a0 2",
+      "  ! v1 v0",
+      "  ? v1 1",
+      "  ^ a0",
+      "  : 1",
+      "  - v2 a0 1",
+      "  $ v3 0 v2",
+      "  - v4 a0 2",
+      "  $ v5 0 v4",
+      "  + v6 v3 v5",
+      "  ^ v6",
+      "}",
+      "= g0 ${1:10}",
+      "$ g1 0 g0",
+      ". g1"
+    ],
+    "description": "Complete Fibonacci example"
+  },
+  "FizzBuzz": {
+    "prefix": "fizzbuzz",
+    "body": [
+      "; FizzBuzz 1-${1:100}",
+      "= v0 1",
+      ": 0",
+      "> v1 v0 ${1:100}",
+      "? v1 9",
+      "% v2 v0 15",
+      "~ v3 v2 0",
+      "? v3 1",
+      "% v4 v0 3",
+      "~ v5 v4 0",
+      "? v5 2",
+      "% v6 v0 5",
+      "~ v7 v6 0",
+      "? v7 3",
+      ". v0",
+      "@ 4",
+      ": 1",
+      ". \"FizzBuzz\"",
+      "@ 4",
+      ": 2",
+      ". \"Fizz\"",
+      "@ 4",
+      ": 3",
+      ". \"Buzz\"",
+      "@ 4",
+      ": 4",
+      "+ v0 v0 1",
+      "@ 0",
+      ": 9"
+    ],
+    "description": "Complete FizzBuzz example"
+  },
+  "Comment": {
+    "prefix": "comment",
+    "body": "; ${1:comment}",
+    "description": "Add a comment"
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "name": "sui-lang",
+  "displayName": "Sui Language",
+  "description": "Sui (粋) - A programming language optimized for LLM code generation",
+  "version": "0.2.0",
+  "publisher": "sui-lang",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets"
+  ],
+  "keywords": [
+    "sui",
+    "llm",
+    "code-generation",
+    "programming-language"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/clearclown/sui-lang-rust-enhanced"
+  },
+  "license": "MIT",
+  "icon": "icon.png",
+  "contributes": {
+    "languages": [
+      {
+        "id": "sui",
+        "aliases": [
+          "Sui",
+          "sui"
+        ],
+        "extensions": [
+          ".sui"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "sui",
+        "scopeName": "source.sui",
+        "path": "./syntaxes/sui.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "sui",
+        "path": "./snippets/sui.json"
+      }
+    ]
+  }
+}

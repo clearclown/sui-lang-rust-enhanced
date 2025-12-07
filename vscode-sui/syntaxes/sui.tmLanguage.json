@@ -1,0 +1,153 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Sui",
+  "scopeName": "source.sui",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#functions" },
+    { "include": "#instructions" },
+    { "include": "#variables" },
+    { "include": "#numbers" },
+    { "include": "#labels" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.semicolon.sui",
+          "match": ";.*$"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.sui",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "name": "constant.character.escape.sui",
+              "match": "\\\\."
+            }
+          ]
+        }
+      ]
+    },
+    "functions": {
+      "patterns": [
+        {
+          "name": "meta.function.sui",
+          "match": "^\\s*(#)\\s*(\\d+)\\s+(\\d+)\\s*(\\{)",
+          "captures": {
+            "1": { "name": "keyword.control.function.sui" },
+            "2": { "name": "entity.name.function.sui" },
+            "3": { "name": "variable.parameter.sui" },
+            "4": { "name": "punctuation.section.block.begin.sui" }
+          }
+        },
+        {
+          "name": "punctuation.section.block.end.sui",
+          "match": "^\\s*\\}"
+        }
+      ]
+    },
+    "instructions": {
+      "patterns": [
+        {
+          "name": "keyword.operator.assignment.sui",
+          "match": "^\\s*="
+        },
+        {
+          "name": "keyword.operator.arithmetic.sui",
+          "match": "^\\s*[+\\-*/%]"
+        },
+        {
+          "name": "keyword.operator.comparison.sui",
+          "match": "^\\s*[<>~]"
+        },
+        {
+          "name": "keyword.operator.logical.sui",
+          "match": "^\\s*[!&|]"
+        },
+        {
+          "name": "keyword.control.conditional.sui",
+          "match": "^\\s*\\?"
+        },
+        {
+          "name": "keyword.control.jump.sui",
+          "match": "^\\s*@"
+        },
+        {
+          "name": "keyword.control.label.sui",
+          "match": "^\\s*:"
+        },
+        {
+          "name": "keyword.control.function-call.sui",
+          "match": "^\\s*\\$"
+        },
+        {
+          "name": "keyword.control.return.sui",
+          "match": "^\\s*\\^"
+        },
+        {
+          "name": "keyword.operator.array.sui",
+          "match": "^\\s*[\\[\\]\\{]"
+        },
+        {
+          "name": "keyword.other.output.sui",
+          "match": "^\\s*\\."
+        },
+        {
+          "name": "keyword.other.input.sui",
+          "match": "^\\s*,"
+        },
+        {
+          "name": "keyword.other.ffi.sui",
+          "match": "^\\s*[RP]"
+        }
+      ]
+    },
+    "variables": {
+      "patterns": [
+        {
+          "name": "variable.local.sui",
+          "match": "\\bv\\d+\\b"
+        },
+        {
+          "name": "variable.global.sui",
+          "match": "\\bg\\d+\\b"
+        },
+        {
+          "name": "variable.parameter.sui",
+          "match": "\\ba\\d+\\b"
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.float.sui",
+          "match": "\\b\\d+\\.\\d+\\b"
+        },
+        {
+          "name": "constant.numeric.integer.sui",
+          "match": "\\b\\d+\\b"
+        }
+      ]
+    },
+    "labels": {
+      "patterns": [
+        {
+          "name": "entity.name.label.sui",
+          "match": "(?<=^\\s*:)\\s*\\d+"
+        },
+        {
+          "name": "entity.name.label.reference.sui",
+          "match": "(?<=^\\s*[@?].*\\s)\\d+\\s*$"
+        }
+      ]
+    }
+  }
+}
