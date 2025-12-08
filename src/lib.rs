@@ -28,6 +28,7 @@
 
 pub mod interpreter;
 pub mod transpiler;
+pub mod debugger;
 
 #[cfg(feature = "repl")]
 pub mod repl;
@@ -38,6 +39,7 @@ pub mod wasm;
 // Re-exports for convenience
 pub use interpreter::{Interpreter, InterpreterError, Value};
 pub use transpiler::{Sui2Py, Sui2Js, Py2Sui, TranspileError};
+pub use debugger::Debugger;
 
 /// Sui language version
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");

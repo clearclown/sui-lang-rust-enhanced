@@ -38,6 +38,10 @@ name = "sui-lsp"
 path = "src/bin/sui_lsp.rs"
 required-features = ["lsp"]
 
+[[bin]]
+name = "sui-debug"
+path = "src/bin/sui_debug.rs"
+
 [dependencies]
 # Regex for parsing
 regex = "1.10"

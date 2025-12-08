@@ -153,6 +153,28 @@ sui --repl
 # :quit  - Exit
 ```
 
+### Debugger
+
+```bash
+# Start debugger
+sui-debug examples/fibonacci.sui
+
+# With initial breakpoints
+sui-debug examples/fibonacci.sui -b 5,10
+
+# Debugger commands:
+# step, s        - Run one instruction
+# continue, c    - Continue until breakpoint
+# break N, b N   - Set breakpoint at line N
+# delete N, d N  - Remove breakpoint
+# list, l        - Show source around current line
+# locals         - Show local variables
+# globals        - Show global variables
+# print E, p E   - Inspect expression
+# backtrace, bt  - Show call stack
+# quit, q        - Exit debugger
+```
+
 ## Syntax
 
 ### Instructions
@@ -450,9 +472,9 @@ Benefits of [Rust + WebAssembly](https://rustwasm.github.io/book/):
 ### Recently Added
 - [x] VS Code extension with syntax highlighting and snippets
 - [x] [LSP (Language Server Protocol)](https://microsoft.github.io/language-server-protocol/) - Using [tower-lsp](https://github.com/ebkalderon/tower-lsp)
+- [x] Step debugger with breakpoints
 
 ### Planned
-- [ ] Step debugger with breakpoints
 - [ ] [LLVM IR](https://mcyoung.xyz/2023/08/01/llvm-ir/) output for native compilation
 - [ ] Type annotations (optional static typing)
 - [ ] Package manager for Sui modules

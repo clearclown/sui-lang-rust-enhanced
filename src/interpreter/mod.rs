@@ -2,12 +2,12 @@
 //!
 //! This module contains the core interpreter for the Sui programming language.
 
-mod lexer;
+pub mod lexer;
 mod parser;
 mod runtime;
 mod value;
 
-pub use lexer::Lexer;
+pub use lexer::{Lexer, ParsedValue};
 pub use parser::{Parser, ParseError};
 pub use runtime::{Interpreter, InterpreterError};
 pub use value::Value;
