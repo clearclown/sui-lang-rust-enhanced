@@ -33,6 +33,11 @@ path = "src/bin/sui2js.rs"
 name = "py2sui"
 path = "src/bin/py2sui.rs"
 
+[[bin]]
+name = "sui-lsp"
+path = "src/bin/sui_lsp.rs"
+required-features = ["lsp"]
+
 [dependencies]
 # Regex for parsing
 regex = "1.10"
@@ -56,6 +61,10 @@ serde_json = { version = "1.0", optional = true }
 # WASM support (optional)
 wasm-bindgen = { version = "0.2", optional = true }
 
+# LSP support (optional)
+tower-lsp = { version = "0.20", optional = true }
+tokio = { version = "1.0", features = ["full"], optional = true }
+
 [dev-dependencies]
 criterion = "0.5"
 tempfile = "3.10"
@@ -66,7 +75,8 @@ repl = ["dep:rustyline"]
 colored-output = []
 wasm = ["dep:wasm-bindgen", "dep:serde", "dep:serde_json"]
 serde = ["dep:serde", "dep:serde_json"]
-full = ["repl", "colored-output", "serde"]
+lsp = ["dep:tower-lsp", "dep:tokio", "dep:serde", "dep:serde_json"]
+full = ["repl", "colored-output", "serde", "lsp"]
 
 [[bench]]
 name = "interpreter"

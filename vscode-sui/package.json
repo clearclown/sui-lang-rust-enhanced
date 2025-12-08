@@ -9,7 +9,8 @@
   },
   "categories": [
     "Programming Languages",
-    "Snippets"
+    "Snippets",
+    "Linters"
   ],
   "keywords": [
     "sui",
@@ -23,6 +24,10 @@
   },
   "license": "MIT",
   "icon": "icon.png",
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "onLanguage:sui"
+  ],
   "contributes": {
     "languages": [
       {
@@ -49,6 +54,37 @@
         "language": "sui",
         "path": "./snippets/sui.json"
       }
-    ]
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Sui Language",
+      "properties": {
+        "sui.lsp.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable the Sui language server"
+        },
+        "sui.lsp.path": {
+          "type": "string",
+          "default": "sui-lsp",
+          "description": "Path to the sui-lsp executable"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.80.0",
+    "typescript": "^5.0.0",
+    "@vscode/vsce": "^2.22.0"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
   }
 }

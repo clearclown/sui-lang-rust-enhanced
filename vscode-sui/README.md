@@ -1,21 +1,31 @@
 # Sui Language Support for VS Code
 
-Syntax highlighting, snippets, and language support for **Sui (粋)** - a programming language optimized for LLM code generation.
+Syntax highlighting, snippets, and Language Server Protocol (LSP) support for **Sui (粋)** - a programming language optimized for LLM code generation.
 
 ## Features
 
+- **Language Server Protocol (LSP)**: Real-time diagnostics, hover information, document symbols
 - **Syntax Highlighting**: Full support for all Sui instructions
 - **Code Snippets**: Quick templates for common patterns
 - **Language Configuration**: Comment toggling, bracket matching
 
 ## Installation
 
+### Prerequisites
+
+For full LSP support, install the Sui language server:
+
+```bash
+cargo install sui-lang --features lsp
+```
+
 ### From VSIX (Local)
 
 ```bash
 cd vscode-sui
-npm install -g @vscode/vsce
-vsce package
+npm install
+npm run compile
+npm run package
 code --install-extension sui-lang-0.2.0.vsix
 ```
 
@@ -25,6 +35,39 @@ code --install-extension sui-lang-0.2.0.vsix
    - **Windows**: `%USERPROFILE%\.vscode\extensions\sui-lang`
    - **macOS/Linux**: `~/.vscode/extensions/sui-lang`
 2. Restart VS Code
+
+## LSP Features
+
+### Diagnostics
+
+Real-time syntax error detection as you type:
+
+- Invalid instructions
+- Missing arguments
+- Unmatched braces
+- Invalid function definitions
+
+### Hover Information
+
+Hover over any instruction to see:
+
+- Instruction syntax
+- Brief description
+- Usage examples
+
+### Document Symbols
+
+Navigate your code with the Outline view (Ctrl+Shift+O):
+
+- Functions (`# id argc {`)
+- Labels (`: label`)
+
+## Configuration
+
+| Setting | Type | Default | Description |
+|---------|------|---------|-------------|
+| `sui.lsp.enabled` | boolean | `true` | Enable/disable the language server |
+| `sui.lsp.path` | string | `"sui-lsp"` | Path to the sui-lsp executable |
 
 ## Syntax Highlighting
 
@@ -78,6 +121,43 @@ The extension highlights:
 = g0 10
 $ g1 0 g0
 . g1
+```
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `Sui: Restart Server` | Restart the language server |
+
+## Troubleshooting
+
+### Language server not starting
+
+1. Ensure `sui-lsp` is in your PATH:
+   ```bash
+   which sui-lsp
+   ```
+
+2. If not found, install it:
+   ```bash
+   cargo install sui-lang --features lsp
+   ```
+
+3. Or set the full path in settings:
+   ```json
+   {
+     "sui.lsp.path": "/path/to/sui-lsp"
+   }
+   ```
+
+### Disable LSP
+
+If you only want syntax highlighting without LSP:
+
+```json
+{
+  "sui.lsp.enabled": false
+}
 ```
 
 ## License

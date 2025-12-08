@@ -449,9 +449,9 @@ Benefits of [Rust + WebAssembly](https://rustwasm.github.io/book/):
 
 ### Recently Added
 - [x] VS Code extension with syntax highlighting and snippets
+- [x] [LSP (Language Server Protocol)](https://microsoft.github.io/language-server-protocol/) - Using [tower-lsp](https://github.com/ebkalderon/tower-lsp)
 
 ### Planned
-- [ ] [LSP (Language Server Protocol)](https://microsoft.github.io/language-server-protocol/) - Using [tower-lsp](https://github.com/ebkalderon/tower-lsp)
 - [ ] Step debugger with breakpoints
 - [ ] [LLVM IR](https://mcyoung.xyz/2023/08/01/llvm-ir/) output for native compilation
 - [ ] Type annotations (optional static typing)
