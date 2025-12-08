@@ -36,6 +36,8 @@ pub enum Token {
 /// Instruction types
 #[derive(Debug, Clone, PartialEq)]
 pub enum Instruction {
+    /// Import: _ "path/to/module.sui"
+    Import { path: String },
     /// Assignment: = var value
     Assign { target: String, value: String },
     /// Addition: + result a b

@@ -167,18 +167,11 @@ fn validate_file(path: &PathBuf) -> bool {
 }
 
 fn run_file(path: &PathBuf, args: &[String], debug: bool) {
-    let code = match fs::read_to_string(path) {
-        Ok(c) => c,
-        Err(e) => {
-            eprintln!("{}: Failed to read file: {}", "Error".red(), e);
-            process::exit(1);
-        }
-    };
-
     let mut interp = Interpreter::new();
     interp.set_debug(debug);
 
-    if let Err(e) = interp.run(&code, args) {
+    // Use run_file for proper import path resolution
+    if let Err(e) = interp.run_file(path, args) {
         eprintln!("{}: {}", "Error".red(), e);
         process::exit(1);
     }

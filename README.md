@@ -206,6 +206,7 @@ sui-debug examples/fibonacci.sui -b 5,10
 | `.` | `. value` | Output |
 | `,` | `, var` | Input |
 | `R`/`P` | `R result "func" args...` | FFI call |
+| `_` | `_ "path/to/module.sui"` | Import module |
 
 ### Variables
 
@@ -274,6 +275,49 @@ $ g1 0 g0
 @ 0
 : 9
 ```
+
+### Modules and Imports
+
+Create reusable modules by defining functions in separate files:
+
+**modules/math.sui:**
+```sui
+; Math utility functions
+
+; Function 100: double(x) - returns x * 2
+# 100 1 {
+* v0 a0 2
+^ v0
+}
+
+; Function 101: square(x) - returns x * x
+# 101 1 {
+* v0 a0 a0
+^ v0
+}
+```
+
+**main.sui:**
+```sui
+; Import math module
+_ "modules/math.sui"
+
+; Use imported functions
+= v0 5
+$ v1 100 v0
+. v1
+; Output: 10
+
+$ v2 101 v0
+. v2
+; Output: 25
+```
+
+**Features:**
+- Relative path resolution from the importing file
+- Nested imports supported (modules can import other modules)
+- Automatic cycle detection prevents circular imports
+- Module caching for efficiency
 
 ## Library Usage (Rust)
 
@@ -464,7 +508,7 @@ Benefits of [Rust + WebAssembly](https://rustwasm.github.io/book/):
 - [x] Interactive REPL mode
 - [x] WebAssembly bindings
 - [x] FFI support (builtin functions)
-- [x] Comprehensive test suite (115+ tests)
+- [x] Comprehensive test suite (118+ tests)
 
 ### In Progress
 - [ ] Online playground (WASM-based) - [Deploy to GitHub Pages]
@@ -473,6 +517,7 @@ Benefits of [Rust + WebAssembly](https://rustwasm.github.io/book/):
 - [x] VS Code extension with syntax highlighting and snippets
 - [x] [LSP (Language Server Protocol)](https://microsoft.github.io/language-server-protocol/) - Using [tower-lsp](https://github.com/ebkalderon/tower-lsp)
 - [x] Step debugger with breakpoints
+- [x] Module/import system for code reuse
 
 ### Planned
 - [ ] [LLVM IR](https://mcyoung.xyz/2023/08/01/llvm-ir/) output for native compilation

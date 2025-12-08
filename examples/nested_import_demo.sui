@@ -1,0 +1,22 @@
+; Nested import demo - imports a module that imports another module
+
+; Import advanced.sui which itself imports math.sui
+_ "modules/advanced.sui"
+
+; Test quadruple (from advanced.sui, uses double from math.sui)
+= v0 5
+$ v1 110 v0
+. "quadruple(5) ="
+. v1
+
+; Test sum_of_squares (from advanced.sui, uses square from math.sui)
+= v2 3
+= v3 4
+$ v4 111 v2 v3
+. "sum_of_squares(3, 4) ="
+. v4
+
+; Can also directly use math.sui functions
+$ v5 100 10
+. "double(10) ="
+. v5

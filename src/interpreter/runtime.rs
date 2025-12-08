@@ -2,8 +2,9 @@
 
 use super::{Function, Instruction, Lexer, Parser, ParseError, Value};
 use super::lexer::ParsedValue;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::io::{self, BufRead, Write};
+use std::path::{Path, PathBuf};
 use thiserror::Error;
 
 /// Interpreter errors
@@ -35,6 +36,12 @@ pub enum InterpreterError {
 
     #[error("Stack overflow")]
     StackOverflow,
+
+    #[error("Module not found: {0}")]
+    ModuleNotFound(String),
+
+    #[error("Circular import detected: {0}")]
+    CircularImport(String),
 }
 
 /// Execution context for a scope
@@ -66,6 +73,10 @@ pub struct Interpreter {
     max_stack_depth: usize,
     /// Debug mode
     debug: bool,
+    /// Current file path (for resolving relative imports)
+    current_file: Option<PathBuf>,
+    /// Loaded modules (for caching and cycle detection)
+    loaded_modules: HashSet<PathBuf>,
 }
 
 impl Default for Interpreter {
@@ -85,6 +96,8 @@ impl Interpreter {
             output: Vec::new(),
             max_stack_depth: 1000,
             debug: false,
+            current_file: None,
+            loaded_modules: HashSet::new(),
         }
     }
 
@@ -105,6 +118,67 @@ impl Interpreter {
         self.context_stack.clear();
         self.context = Context::default();
         self.output.clear();
+        self.current_file = None;
+        self.loaded_modules.clear();
+    }
+
+    /// Set the current file path (for resolving imports)
+    pub fn set_current_file(&mut self, path: Option<PathBuf>) {
+        self.current_file = path;
+    }
+
+    /// Load a module from a file path
+    fn load_module(&mut self, import_path: &str) -> Result<(), InterpreterError> {
+        // Resolve the path relative to the current file
+        let resolved_path = if let Some(ref current) = self.current_file {
+            if let Some(parent) = current.parent() {
+                parent.join(import_path)
+            } else {
+                PathBuf::from(import_path)
+            }
+        } else {
+            PathBuf::from(import_path)
+        };
+
+        // Canonicalize for consistent comparison
+        let canonical = resolved_path.canonicalize()
+            .map_err(|_| InterpreterError::ModuleNotFound(import_path.to_string()))?;
+
+        // Check for circular imports
+        if self.loaded_modules.contains(&canonical) {
+            return Ok(()); // Already loaded, skip
+        }
+
+        // Mark as loaded (before loading to catch cycles)
+        self.loaded_modules.insert(canonical.clone());
+
+        // Read module file
+        let code = std::fs::read_to_string(&canonical)
+            .map_err(|_| InterpreterError::ModuleNotFound(import_path.to_string()))?;
+
+        // Save current file
+        let prev_file = self.current_file.take();
+        self.current_file = Some(canonical);
+
+        // Parse module
+        let (instructions, functions) = Parser::parse(&code)?;
+
+        // Add functions from module
+        for func in functions {
+            self.functions.insert(func.id, func);
+        }
+
+        // Process any imports in the module
+        for instr in &instructions {
+            if let Instruction::Import { path } = instr {
+                self.load_module(path)?;
+            }
+        }
+
+        // Restore current file
+        self.current_file = prev_file;
+
+        Ok(())
     }
 
     /// Resolve a value reference to an actual Value
@@ -151,6 +225,11 @@ impl Interpreter {
         match instr {
             Instruction::Empty | Instruction::Comment | Instruction::FuncDef { .. } | Instruction::FuncEnd => {
                 // No-op
+            }
+
+            Instruction::Import { path } => {
+                // Load the imported module
+                self.load_module(path)?;
             }
 
             Instruction::Assign { target, value } => {
@@ -583,6 +662,77 @@ impl Interpreter {
         // Store functions
         for func in functions {
             self.functions.insert(func.id, func);
+        }
+
+        // Process imports first (to load function definitions from other modules)
+        for instr in &instructions {
+            if let Instruction::Import { path } = instr {
+                self.load_module(path)?;
+            }
+        }
+
+        // Execute main code (imports will be skipped as already processed)
+        self.execute_block(&instructions)?;
+
+        Ok(self.output.clone())
+    }
+
+    /// Run Sui code from a file
+    ///
+    /// # Arguments
+    /// * `path` - Path to the Sui source file
+    /// * `args` - Command-line arguments
+    ///
+    /// # Returns
+    /// Vector of output strings
+    pub fn run_file(&mut self, path: &Path, args: &[String]) -> Result<Vec<String>, InterpreterError> {
+        // Canonicalize path for consistent module resolution
+        let canonical = path.canonicalize()
+            .map_err(|_| InterpreterError::ModuleNotFound(path.display().to_string()))?;
+
+        // Reset state but preserve file info
+        self.global_vars.clear();
+        self.functions.clear();
+        self.context_stack.clear();
+        self.context = Context::default();
+        self.output.clear();
+        self.loaded_modules.clear();
+
+        // Set current file for import resolution
+        self.current_file = Some(canonical.clone());
+
+        // Mark this file as loaded (to prevent circular imports)
+        self.loaded_modules.insert(canonical.clone());
+
+        // Set command-line arguments
+        self.global_vars.insert(100, Value::Integer(args.len() as i64));
+        for (i, arg) in args.iter().enumerate() {
+            let val = if let Ok(n) = arg.parse::<i64>() {
+                Value::Integer(n)
+            } else if let Ok(f) = arg.parse::<f64>() {
+                Value::Float(f)
+            } else {
+                Value::String(arg.clone())
+            };
+            self.global_vars.insert(101 + i as i64, val);
+        }
+
+        // Read and parse the code
+        let code = std::fs::read_to_string(&canonical)
+            .map_err(|_| InterpreterError::ModuleNotFound(path.display().to_string()))?;
+
+        let (instructions, functions) = Parser::parse(&code)?;
+
+        // Store functions
+        for func in functions {
+            self.functions.insert(func.id, func);
+        }
+
+        // Process imports first
+        for instr in &instructions {
+            if let Instruction::Import { path } = instr {
+                self.load_module(path)?;
+            }
         }
 
         // Execute main code

@@ -1,0 +1,7 @@
+; String utility functions module
+
+; Function 200: greet(name) - prints a greeting
+# 200 1 {
+. "Hello, "
+. a0
+}

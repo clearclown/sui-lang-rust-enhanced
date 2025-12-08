@@ -161,7 +161,9 @@ impl Debugger {
 
     fn run_instruction(&mut self, instr: &Instruction) -> Result<Option<i64>, String> {
         match instr {
-            Instruction::Empty | Instruction::Comment | Instruction::FuncDef { .. } | Instruction::FuncEnd => {}
+            Instruction::Empty | Instruction::Comment | Instruction::FuncDef { .. } | Instruction::FuncEnd | Instruction::Import { .. } => {
+                // Import is handled during loading, no-op during execution
+            }
             Instruction::Assign { target, value } => {
                 let val = self.resolve(value);
                 self.assign(target, val);

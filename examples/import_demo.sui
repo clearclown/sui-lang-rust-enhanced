@@ -1,0 +1,24 @@
+; Import demo - demonstrates the module/import system
+
+; Import math functions from modules/math.sui
+_ "modules/math.sui"
+
+; Test the double function (function 100)
+= v0 5
+$ v1 100 v0
+. "double(5) ="
+. v1
+
+; Test the square function (function 101)
+= v2 7
+$ v3 101 v2
+. "square(7) ="
+. v3
+
+; Test add_three function (function 102)
+= v4 10
+= v5 20
+= v6 30
+$ v7 102 v4 v5 v6
+. "add_three(10, 20, 30) ="
+. v7

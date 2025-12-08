@@ -1,0 +1,17 @@
+; Advanced math module - imports math.sui for base functions
+_ "math.sui"
+
+; Function 110: quadruple(x) - returns x * 4 (using double twice)
+# 110 1 {
+$ v0 100 a0
+$ v1 100 v0
+^ v1
+}
+
+; Function 111: sum_of_squares(a, b) - returns a^2 + b^2
+# 111 2 {
+$ v0 101 a0
+$ v1 101 a1
++ v2 v0 v1
+^ v2
+}

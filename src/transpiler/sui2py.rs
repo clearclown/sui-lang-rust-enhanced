@@ -146,7 +146,9 @@ impl Sui2Py {
         _is_function: bool,
     ) {
         match instr {
-            Instruction::Empty | Instruction::Comment | Instruction::Label { .. } => {}
+            Instruction::Empty | Instruction::Comment | Instruction::Label { .. } | Instruction::Import { .. } => {
+                // Import is handled at runtime, skip in transpilation
+            }
 
             Instruction::Assign { target, value } => {
                 self.emit(&format!("{} = {}", target, self.resolve_value(value)));

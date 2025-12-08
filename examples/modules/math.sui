@@ -1,0 +1,21 @@
+; Math utility functions module
+; This module provides common math functions
+
+; Function 100: double(x) - returns x * 2
+# 100 1 {
+* v0 a0 2
+^ v0
+}
+
+; Function 101: square(x) - returns x * x
+# 101 1 {
+* v0 a0 a0
+^ v0
+}
+
+; Function 102: add_three(a, b, c) - returns a + b + c
+# 102 3 {
++ v0 a0 a1
++ v1 v0 a2
+^ v1
+}

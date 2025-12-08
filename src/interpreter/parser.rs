@@ -39,6 +39,14 @@ impl Parser {
             // Comment lines start with ;
             ";" => Ok(Instruction::Comment),
 
+            // Import: _ "path/to/module.sui"
+            "_" => {
+                Self::check_args(op, &args, 1, line_num)?;
+                // Remove quotes from path if present
+                let path = args[0].trim_matches('"').to_string();
+                Ok(Instruction::Import { path })
+            }
+
             // Assignment: = var value
             "=" => {
                 Self::check_args(op, &args, 2, line_num)?;
